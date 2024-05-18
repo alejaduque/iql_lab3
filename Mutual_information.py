@@ -84,6 +84,11 @@ def shuffle_tokens(tokens):
     random.shuffle(shuffled)
     return shuffled
 
+def calculate_shuffled_mi(tokens, max_d, num_shuffles):
+    with Pool(cpu_count()) as pool:
+        shuffled_mis = pool.starmap(mutual_information, [(shuffle_tokens(tokens), max_d) for _ in range(num_shuffles)])
+    return np.array(shuffled_mis)
+
 def calculate_p_values(observed_mi, shuffled_mis):
     p_values = np.zeros_like(observed_mi)
     for d in range(1, len(observed_mi)):
@@ -99,27 +104,24 @@ def calculate_mi_and_p_values(file_path, max_d, num_shuffles):
     with open(file_path, 'r', encoding='utf-8') as f:
         tokens = f.read().split()
     observed_mi = mutual_information(tokens, max_d)
-    shuffled_mis = np.zeros((num_shuffles, max_d))
-    for i in range(num_shuffles):
-        shuffled_tokens = shuffle_tokens(tokens)
-        shuffled_mis[i] = mutual_information(shuffled_tokens, max_d)
+    shuffled_mis = calculate_shuffled_mi(tokens, max_d, num_shuffles)
     p_values = calculate_p_values(observed_mi, shuffled_mis)
     return os.path.basename(file_path), observed_mi, p_values
 
-def save_results(results, output_dir):
+def save_results(result, output_dir):
+    filename, mi, p_values = result
     os.makedirs(output_dir, exist_ok=True)
-    for filename, mi, p_values in results:
-        mi_save_path = os.path.join(output_dir, f"{filename}.mi")
-        pv_save_path = os.path.join(output_dir, f"{filename}.pvalues")
-        np.savetxt(mi_save_path, mi)
-        np.savetxt(pv_save_path, p_values)
-        print(f"Saved mutual information and p-values for {filename}")
+    mi_save_path = os.path.join(output_dir, f"{filename}.mi")
+    pv_save_path = os.path.join(output_dir, f"{filename}.pvalues")
+    np.savetxt(mi_save_path, mi)
+    np.savetxt(pv_save_path, p_values)
+    print(f"Saved mutual information and p-values for {filename}")
 
 if __name__ == "__main__":
     tokenized_dir = "data/tokenized"
     output_dir = "data/mi_results"
-    max_d = 10  # Define maximum distance
-    num_shuffles = 20  # Define the number of shuffles for p-value calculation
+    max_d = 40  # Define maximum distance
+    num_shuffles = 50  # Define the number of shuffles for p-value calculation
 
     print(f"Maximum distance (max_d): {max_d}")
     print(f"Number of shuffles: {num_shuffles}")
@@ -128,9 +130,8 @@ if __name__ == "__main__":
     tokenized_files = [os.path.join(tokenized_dir, f) for f in os.listdir(tokenized_dir) if f.endswith('.tokens')]
 
     print("Starting mutual information and p-value calculation...")
-    with Pool(cpu_count()) as pool:
-        results = pool.starmap(calculate_mi_and_p_values, [(file, max_d, num_shuffles) for file in tokenized_files])
-
-    print("Saving mutual information and p-value results...")
-    save_results(results, output_dir)
-    print("Mutual information and p-value calculation and saving complete.")
+    for file in tokenized_files:
+        result = calculate_mi_and_p_values(file, max_d, num_shuffles)
+        save_results(result, output_dir)
+    
+    print("\nMutual information and p-value calculation and saving complete.")
