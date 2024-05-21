@@ -3,15 +3,15 @@ import re
 import spacy
 import jieba
 from multiprocessing import Pool, cpu_count
-
 from spacy.lang.ru import Russian
 nlp_ru= Russian()
 # Load Spacy models
 nlp_es = spacy.load('es_core_news_sm')
 nlp_en = spacy.load('en_core_web_sm')
+nlp_fi= spacy.load("fi_core_news_sm") 
 
 # Extracts raw text from each file 
-codes_langs = ['zh','es', 'en', 'ru', 'ja'] #ISO code of languages: chinese, spanish, english, russian, japanese.
+codes_langs = ['zh','es', 'en', 'ru', 'ja', 'fi'] #ISO code of languages: chinese, spanish, english, russian, japanese.
 def extract_raw_texts(list_of_codes):
     raw_files_texts = {}
     path = "data/no_boilerplate/"
@@ -42,6 +42,9 @@ def tokenize_text(item):
     elif 'en' in filename:
         model_lang = nlp_en
         tokens = tokenizer(text, model_lang)
+    elif 'fi' in filename:
+        model_lang= nlp_fi
+        tokens= tokenizer(text, model_lang)
     elif 'zh' in filename:
         punc = ["\n", ", "," ","，",": ",'。',"-",":", "(",")","'","\"","」","「",
                 "？","﹔","　","：","！","、","《","》","』","『","[","]"]
