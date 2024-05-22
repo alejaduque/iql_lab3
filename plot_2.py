@@ -75,7 +75,7 @@ def save_theil_sen_data(mi_files, mi_results_dir, output_file, percentage):
             mi_data = load_data(mi_file_path)
             avg_shuffled_mi_data = load_data(avg_shuffled_mi_file_path)
             
-            output_plot_path = os.path.join("data/plots", f"{base_name}.png")
+            output_plot_path = os.path.join("data/plots_2", f"{base_name}.png")
             theil_sen_slope, theil_sen_intercept = plot_mi_d(mi_data, avg_shuffled_mi_data, output_plot_path, percentage=percentage)
             f.write(f"{base_name},{theil_sen_slope},{theil_sen_intercept}\n")
     print(f"Theil-Sen data saved to {output_file}")
