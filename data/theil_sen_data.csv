@@ -1,4 +1,4 @@
-File,Slope,Intercept
+File,Theil-Sen Slope,Theil-Sen Intercept
 en_book3.txt.tokens,-0.04304775777879313,1.398361874872233
 en_macbeth.txt.tokens,-0.0439626422560434,1.4159962586188781
 en_quixote.txt.tokens,-0.10659302745420883,1.0203597835096219
