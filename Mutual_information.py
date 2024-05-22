@@ -120,8 +120,8 @@ def save_results(result, output_dir):
 if __name__ == "__main__":
     tokenized_dir = "data/tokenized"
     output_dir = "data/mi_results"
-    max_d = 40  # Define maximum distance
-    num_shuffles = 50  # Define the number of shuffles for p-value calculation
+    max_d = 20  # Define maximum distance
+    num_shuffles = 40  # Define the number of shuffles for p-value calculation
 
     print(f"Maximum distance (max_d): {max_d}")
     print(f"Number of shuffles: {num_shuffles}")
