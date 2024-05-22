@@ -106,21 +106,24 @@ def calculate_mi_and_p_values(file_path, max_d, num_shuffles):
     observed_mi = mutual_information(tokens, max_d)
     shuffled_mis = calculate_shuffled_mi(tokens, max_d, num_shuffles)
     p_values = calculate_p_values(observed_mi, shuffled_mis)
-    return os.path.basename(file_path), observed_mi, p_values
+    avg_shuffled_mi = np.mean(shuffled_mis, axis=0)
+    return os.path.basename(file_path), observed_mi, p_values, avg_shuffled_mi
 
 def save_results(result, output_dir):
-    filename, mi, p_values = result
+    filename, mi, p_values, avg_shuffled_mi = result
     os.makedirs(output_dir, exist_ok=True)
     mi_save_path = os.path.join(output_dir, f"{filename}.mi")
     pv_save_path = os.path.join(output_dir, f"{filename}.pvalues")
+    avg_save_path = os.path.join(output_dir, f"{filename}.avg_shuffled_mi")
     np.savetxt(mi_save_path, mi)
     np.savetxt(pv_save_path, p_values)
-    print(f"Saved mutual information and p-values for {filename}")
+    np.savetxt(avg_save_path, avg_shuffled_mi)
+    print(f"Saved mutual information, p-values, and average shuffled MI for {filename}")
 
 if __name__ == "__main__":
     tokenized_dir = "data/tokenized"
     output_dir = "data/mi_results"
-    max_d = 20  # Define maximum distance
+    max_d = 30  # Define maximum distance
     num_shuffles = 40  # Define the number of shuffles for p-value calculation
 
     print(f"Maximum distance (max_d): {max_d}")
