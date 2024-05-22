@@ -83,7 +83,7 @@ def save_theil_sen_data(mi_files, mi_results_dir, output_file, percentage):
 if __name__ == "__main__":
     mi_results_dir = "data/mi_results"
     output_plot_dir = "data/plots_2"
-    output_theil_sen_file = "data/csv/theil_sen_data.csv"
+    output_theil_sen_file = "data/csv/theil_sen_data_2.csv"
     os.makedirs(output_plot_dir, exist_ok=True)
 
     percentage = 0.01  # Set the percentage here
